@@ -3,16 +3,27 @@ const {
   articleData,
   commentData,
   userData
-} = require('../data/index.js');
+} = require("../data/index.js");
 
-const { formatDates, formatComments, makeRefObj } = require('../utils/utils');
+const { formatDates, formatComments, makeRefObj } = require("../utils/utils");
 
 exports.seed = function(knex) {
-  const topicsInsertions = knex('topics').insert(topicData);
-  const usersInsertions = knex('users').insert(userData);
+  const topicsInsertions = knex("topics").insert(topicData);
+  const usersInsertions = knex("users").insert(userData);
 
-  return Promise.all([topicsInsertions, usersInsertions])
+  return knex.migrate
+    .rollback()
+    .then(() => knex.migrate.latest())
     .then(() => {
+      return Promise.all([topicsInsertions, usersInsertions]);
+    })
+    .then(topics => {
+      const cleanedArticleData = formatDates(articleData);
+
+      return knex("articles")
+        .insert(cleanedArticleData)
+        .returning("*");
+
       /* 
       
       Your article data is currently in the incorrect format and will violate your SQL schema. 
@@ -23,8 +34,10 @@ exports.seed = function(knex) {
       */
     })
     .then(articleRows => {
-      /* 
+      console.log(articleRows);
+      console.log("up to here yey!");
 
+      /*
       Your comment data is currently in the incorrect format and will violate your SQL schema. 
 
       Keys need renaming, values need changing, and most annoyingly, your comments currently only refer to the title of the article they belong to, not the id. 
@@ -34,6 +47,6 @@ exports.seed = function(knex) {
 
       const articleRef = makeRefObj(articleRows);
       const formattedComments = formatComments(commentData, articleRef);
-      return knex('comments').insert(formattedComments);
+      return knex("comments").insert(formattedComments);
     });
 };
