@@ -29,5 +29,8 @@
     "mocha": "^6.2.2",
     "pg": "^7.12.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "chai-sorted": "^0.2.0",
+    "supertest": "^4.0.2"
+  }
 }

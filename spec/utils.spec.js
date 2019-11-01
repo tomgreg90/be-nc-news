@@ -11,6 +11,7 @@ describe("formatDates", () => {
     const expected = [];
     const actual = formatDates(input);
     expect(actual).to.eql(expected);
+    expect(actual).to.not.equal(input);
   });
   it("converts timestamp for a single object in an array into a javascript date object", () => {
     const input = [
@@ -34,6 +35,7 @@ describe("formatDates", () => {
     ];
 
     expect(actual).to.deep.equal(expected);
+    expect(actual).to.not.equal(input);
   });
   it("converts timestamp for multiple objects into a javascript date object", () => {
     const input = [
@@ -86,6 +88,7 @@ describe("formatDates", () => {
       }
     ];
     expect(actual).to.deep.equal(expected);
+    expect(actual).to.not.equal(input);
   });
 });
 
@@ -153,4 +156,104 @@ describe("makeRefObj", () => {
   });
 });
 
-describe("formatComments", () => {});
+describe("formatComments", () => {
+  it("returns an empty array when passed an empty array", () => {
+    const input = [];
+    const expected = [];
+    const actual = formatComments(input);
+    expect(actual).to.eql(expected);
+  });
+  it("correctly formats a single comment to correct key names and date", () => {
+    const input = [
+      {
+        body:
+          "Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.",
+        belongs_to:
+          "The People Tracking Every Touch, Pass And Tackle in the World Cup",
+        created_by: "tickle122",
+        votes: -1,
+        created_at: 1468087638932
+      }
+    ];
+    const articleRef = {
+      "The People Tracking Every Touch, Pass And Tackle in the World Cup": 18,
+      "Who are the most followed clubs and players on Instagram?": 19,
+      "History of Football": 20
+    };
+    const actual = formatComments(input, articleRef);
+    const expected = [
+      {
+        body:
+          "Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.",
+        votes: -1,
+        created_at: new Date(1468087638932),
+        author: "tickle122",
+        article_id: 18
+      }
+    ];
+    expect(actual).to.deep.equal(expected);
+    expect(actual).to.not.equal(input);
+  });
+  it("correctly formats multiple comments to correct key names and date", () => {
+    const input = [
+      {
+        body:
+          "Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.",
+        belongs_to:
+          "The People Tracking Every Touch, Pass And Tackle in the World Cup",
+        created_by: "tickle122",
+        votes: -1,
+        created_at: 1468087638932
+      },
+      {
+        body: "Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.",
+        belongs_to: "Making sense of Redux",
+        created_by: "grumpy19",
+        votes: 7,
+        created_at: 1478813209256
+      },
+      {
+        body:
+          "Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio.",
+        belongs_to: "22 Amazing open source React projects",
+        created_by: "grumpy19",
+        votes: 3,
+        created_at: 1504183900263
+      }
+    ];
+    const articleRef = {
+      "The People Tracking Every Touch, Pass And Tackle in the World Cup": 18,
+      "Making sense of Redux": 4,
+      "22 Amazing open source React projects": 3
+    };
+    const actual = formatComments(input, articleRef);
+    const expected = [
+      {
+        body:
+          "Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.",
+        votes: -1,
+        created_at: new Date(1468087638932),
+        author: "tickle122",
+        article_id: 18
+      },
+      {
+        body: "Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.",
+
+        article_id: 4,
+        author: "grumpy19",
+        votes: 7,
+        created_at: new Date(1478813209256)
+      },
+      {
+        body:
+          "Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio.",
+        article_id: 3,
+        author: "grumpy19",
+        votes: 3,
+        created_at: new Date(1504183900263)
+      }
+    ];
+    expect(actual).to.deep.equal(expected);
+    expect(actual).to.not.equal(input);
+  });
+});

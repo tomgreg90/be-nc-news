@@ -4,7 +4,7 @@ exports.up = function(knex) {
     articleTable.increments("article_id").primary();
     articleTable.string("title").notNullable();
     articleTable.text("body").notNullable();
-    articleTable.integer("votes");
+    articleTable.integer("votes").defaultTo(0);
     articleTable.string("topic");
     articleTable
       .foreign("topic")

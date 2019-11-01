@@ -34,9 +34,6 @@ exports.seed = function(knex) {
       */
     })
     .then(articleRows => {
-      console.log(articleRows);
-      console.log("up to here yey!");
-
       /*
       Your comment data is currently in the incorrect format and will violate your SQL schema. 
 
@@ -46,7 +43,10 @@ exports.seed = function(knex) {
       */
 
       const articleRef = makeRefObj(articleRows);
+
       const formattedComments = formatComments(commentData, articleRef);
+      console.log(formattedComments);
+
       return knex("comments").insert(formattedComments);
     });
 };
