@@ -6,10 +6,11 @@ const {
   getCommentsByArticleId
 } = require("../controllers/articles");
 
-articleRouter.route("/").get(getArticleById);
+articleRouter
+  .route("/:id")
+  .get(getArticleById)
+  .patch(updateArticleVotes);
 
-articleRouter.get("/:id", getArticleById);
-articleRouter.patch("/:id", updateArticleVotes);
 articleRouter.post("/:id/comments", postComment);
 articleRouter.get("/:id/comments", getCommentsByArticleId);
 

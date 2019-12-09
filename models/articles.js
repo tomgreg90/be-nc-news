@@ -10,26 +10,32 @@ const fetchArticleById = id => {
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
     .then(article => {
-      if (article.length === 1) return article;
+      if (!article.length)
+        return Promise.reject({ status: 404, msg: "Article does not exist" });
       else {
-        Promise.reject(error);
+        return article;
       }
     });
 };
 
-const changeArticleVotes = (id, amount = 0) => {
+const changeArticleVotes = (id, amount) => {
   return connection("articles")
     .where("article_id", "=", id)
     .increment("votes", amount)
     .returning("*")
     .then(article => {
+      if (!article.length)
+        return Promise.reject({ status: 404, msg: "Article does not exist!" });
       return article;
     });
 };
 
 const sendComment = (id, comment) => {
+  const commentKeys = Object.keys(comment);
+  if (commentKeys.length > 2)
+    return Promise.reject({ status: 400, msg: "Bad request invalid comment!" });
   if (!comment.username || !comment.body) {
-    return Promise.reject({ status: 400, msg: "Bad Request Invalid Comment!" });
+    return Promise.reject({ status: 400, msg: "Bad request invalid comment!" });
   } else {
     return connection("comments")
       .insert({ author: comment.username, body: comment.body, article_id: id })

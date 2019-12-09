@@ -10,23 +10,24 @@ exports.getArticleById = (req, res, next) => {
 
   fetchArticleById(id)
     .then(article => {
-      res.status(200).send(article);
+      res.status(200).send({ article });
     })
-    .catch(error => {
-      return next(error);
+    .catch(err => {
+      return next(err);
     });
 };
 
 exports.updateArticleVotes = (req, res, next) => {
+  console.log("updating article votes!");
   const { inc_votes } = req.body;
   const { id } = req.params;
 
   changeArticleVotes(id, inc_votes)
     .then(article => {
-      res.status(200).send(article);
+      res.status(200).send({ article });
     })
-    .catch(error => {
-      return next(error);
+    .catch(err => {
+      return next(err);
     });
 };
 
@@ -36,10 +37,11 @@ exports.postComment = (req, res, next) => {
 
   sendComment(id, comment)
     .then(comment => {
-      res.status(201).send(comment);
+      res.status(201).send({ comment });
     })
-    .catch(error => {
-      next(error);
+    .catch(err => {
+      console.log(err.message);
+      return next(err);
     });
 };
 

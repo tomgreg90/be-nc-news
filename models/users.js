@@ -5,6 +5,8 @@ const fetchUserByUsername = username => {
   return connection("users")
     .where("username", username)
     .then(user => {
+      if (!user.length)
+        return Promise.reject({ status: 404, msg: "User does not exist!" });
       return user;
     });
 };

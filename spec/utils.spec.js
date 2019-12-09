@@ -35,7 +35,14 @@ describe("formatDates", () => {
     ];
 
     expect(actual).to.deep.equal(expected);
-    expect(actual).to.not.equal(input);
+    expect(actual).to.not.eql(input);
+    expect(input[0]).to.deep.equal({
+      title: "A",
+      topic: "mitch",
+      author: "icellusedkars",
+      body: "Delicious tin of cat food",
+      created_at: 911564514171
+    });
   });
   it("converts timestamp for multiple objects into a javascript date object", () => {
     const input = [
@@ -88,7 +95,8 @@ describe("formatDates", () => {
       }
     ];
     expect(actual).to.deep.equal(expected);
-    expect(actual).to.not.equal(input);
+    expect(actual).to.not.eql(input);
+    expect(actual[0]).to.not.eql(input[0]);
   });
 });
 
@@ -192,7 +200,8 @@ describe("formatComments", () => {
       }
     ];
     expect(actual).to.deep.equal(expected);
-    expect(actual).to.not.equal(input);
+    expect(actual).to.not.eql(input);
+    expect(actual[0]).to.not.eql(input[0]);
   });
   it("correctly formats multiple comments to correct key names and date", () => {
     const input = [
@@ -254,6 +263,7 @@ describe("formatComments", () => {
       }
     ];
     expect(actual).to.deep.equal(expected);
-    expect(actual).to.not.equal(input);
+    expect(actual).to.not.eql(input);
+    expect(actual[0]).to.not.eql(input[0]);
   });
 });
