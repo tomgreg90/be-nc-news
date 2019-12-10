@@ -2,7 +2,8 @@ const {
   fetchArticleById,
   changeArticleVotes,
   sendComment,
-  fetchCommentsByArticleId
+  fetchCommentsByArticleId,
+  fetchArticles
 } = require("../models/articles");
 
 exports.getArticleById = (req, res, next) => {
@@ -19,10 +20,10 @@ exports.getArticleById = (req, res, next) => {
 
 exports.updateArticleVotes = (req, res, next) => {
   console.log("updating article votes!");
-  const { inc_votes } = req.body;
+
   const { id } = req.params;
 
-  changeArticleVotes(id, inc_votes)
+  changeArticleVotes(id, req.body)
     .then(article => {
       res.status(200).send({ article });
     })
@@ -40,21 +41,29 @@ exports.postComment = (req, res, next) => {
       res.status(201).send({ comment });
     })
     .catch(err => {
-      console.log(err.message);
       return next(err);
     });
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const { id } = req.params;
-  const sort = req.query;
-  console.log(sort);
-  fetchCommentsByArticleId(id, sort)
+
+  fetchCommentsByArticleId(id, req.query)
     .then(comments => {
       res.status(200).send(comments);
     })
-    .catch(error => {
-      console.log(error.code);
-      return next(error);
+    .catch(err => {
+      return next(err);
+    });
+};
+
+exports.getArticles = (req, res, next) => {
+  console.log("getting the articles!");
+  fetchArticles(req.query)
+    .then(articles => {
+      res.status(200).send({ articles });
+    })
+    .catch(err => {
+      return next(err);
     });
 };

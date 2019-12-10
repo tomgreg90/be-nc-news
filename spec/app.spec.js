@@ -1,6 +1,6 @@
 process.env.NODE_ENV = "test";
 const chai = require("chai");
-const chaiSorted = require("chai-sorted");
+const chaiSorted = require("sams-chai-sorted");
 chai.use(chaiSorted);
 const connection = require("../db/connection");
 const { expect } = chai;
@@ -97,25 +97,7 @@ describe("/api", () => {
           expect(body.article[0].votes).to.equal(7);
         });
     });
-    xit("PATCH 200 decreases article votes by a given amount", () => {
-      return request(app)
-        .patch("/api/articles/1")
-        .send({ inc_votes: 7 })
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.article).to.be.an("array");
-          expect(body.article[0]).to.have.keys([
-            "article_id",
-            "title",
-            "body",
-            "votes",
-            "topic",
-            "author",
-            "created_at"
-          ]);
-          expect(body.article[0].votes).to.equal(96);
-        });
-    });
+
     it("PATCH returns status 404 if article_id does not exist", () => {
       return request(app)
         .patch("/api/articles/99")
@@ -136,132 +118,344 @@ describe("/api", () => {
           );
         });
     });
-  });
-  describe("/api/articles/:article_id/comments", () => {
-    it("POST returns status 201 with the posted comment", () => {
+    it("PATCH returns status 400 when patch body is in the wrong format", () => {
       return request(app)
-        .post("/api/articles/3/comments")
-        .send({ username: "rogersop", body: "fascinating article" })
-        .expect(201)
-        .then(({ body }) => {
-          expect(body.comment).to.be.an("array");
-          expect(body.comment[0]).to.have.keys([
-            "comment_id",
-            "author",
-            "article_id",
-            "votes",
-            "created_at",
-            "body"
-          ]);
-        });
-    });
-    it("POST returns status 404 when article does not exist", () => {
-      return request(app)
-        .post("/api/articles/99/comments")
-        .send({ username: "rogersop", body: "fascinating article" })
+        .patch("/api/articles/3")
+        .send({ increase_votes: 4 })
         .expect(400)
         .then(err => {
-          expect(err.body.msg).to.equal(
-            'insert into "comments" ("article_id", "author", "body") values ($1, $2, $3) returning * - insert or update on table "comments" violates foreign key constraint "comments_article_id_foreign"'
-          );
+          expect(err.body.msg).to.equal("Incorrect query body!");
         });
     });
-    it("POST returns status 404 when given an invalid username", () => {
+    it("PATCH returns status 400 when patch body contains more than one key", () => {
       return request(app)
-        .post("/api/articles/3/comments")
-        .send({ username: "tomgreg", body: "not a real comment" })
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).to.equal(
-            'insert into "comments" ("article_id", "author", "body") values ($1, $2, $3) returning * - insert or update on table "comments" violates foreign key constraint "comments_author_foreign"'
-          );
-        });
-    });
-    it("POST returns status 400 when cpmment has incorrect keys", () => {
-      return request(app)
-        .post("/api/articles/3/comments")
-        .send({ userme: "rogersop", body: "fascinating article" })
+        .patch("/api/articles/3")
+        .send({ inc_votes: 4, column: "votes" })
         .expect(400)
         .then(err => {
-          expect(err.body.msg).to.equal("Bad request invalid comment!");
+          expect(err.body.msg).to.equal("Incorrect query body!");
         });
     });
-    it("POST returns status 400 when comment or username is not a string", () => {
-      return request(app)
-        .post("/api/articles/3/comments")
-        .send({ username: 2433234234, body: "fascinating article" })
-        .expect(400)
-        .then(err => {
-          expect(err.body.msg).to.equal(
-            'insert into "comments" ("article_id", "author", "body") values ($1, $2, $3) returning * - insert or update on table "comments" violates foreign key constraint "comments_author_foreign"'
-          );
-        });
-    });
-    it("POST returns status 400 when post comment has too many keys", () => {
-      return request(app)
-        .post("/api/articles/3/comments")
-        .send({
-          username: "rogersop",
-          body: "fascinating article",
-          genre: "Sport"
-        })
-        .expect(400)
-        .then(err => {
-          expect(err.body.msg).to.equal("Bad request invalid comment!");
-        });
-    });
+    describe("/api/articles/:article_id/comments", () => {
+      it("POST returns status 201 with the posted comment", () => {
+        return request(app)
+          .post("/api/articles/3/comments")
+          .send({ username: "rogersop", body: "fascinating article" })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.comment).to.be.an("array");
+            expect(body.comment[0]).to.have.keys([
+              "comment_id",
+              "author",
+              "article_id",
+              "votes",
+              "created_at",
+              "body"
+            ]);
+          });
+      });
+      it("POST returns status 404 when article does not exist", () => {
+        return request(app)
+          .post("/api/articles/99/comments")
+          .send({ username: "rogersop", body: "fascinating article" })
+          .expect(400)
+          .then(err => {
+            expect(err.body.msg).to.equal(
+              'insert into "comments" ("article_id", "author", "body") values ($1, $2, $3) returning * - insert or update on table "comments" violates foreign key constraint "comments_article_id_foreign"'
+            );
+          });
+      });
+      it("POST returns status 404 when given an invalid username", () => {
+        return request(app)
+          .post("/api/articles/3/comments")
+          .send({ username: "tomgreg", body: "not a real comment" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal(
+              'insert into "comments" ("article_id", "author", "body") values ($1, $2, $3) returning * - insert or update on table "comments" violates foreign key constraint "comments_author_foreign"'
+            );
+          });
+      });
+      it("POST returns status 400 when cpmment has incorrect keys", () => {
+        return request(app)
+          .post("/api/articles/3/comments")
+          .send({ userme: "rogersop", body: "fascinating article" })
+          .expect(400)
+          .then(err => {
+            expect(err.body.msg).to.equal("Bad request invalid comment!");
+          });
+      });
+      it("POST returns status 400 when comment or username is not a string", () => {
+        return request(app)
+          .post("/api/articles/3/comments")
+          .send({ username: 2433234234, body: "fascinating article" })
+          .expect(400)
+          .then(err => {
+            expect(err.body.msg).to.equal(
+              'insert into "comments" ("article_id", "author", "body") values ($1, $2, $3) returning * - insert or update on table "comments" violates foreign key constraint "comments_author_foreign"'
+            );
+          });
+      });
+      it("POST returns status 400 when post comment has too many keys", () => {
+        return request(app)
+          .post("/api/articles/3/comments")
+          .send({
+            username: "rogersop",
+            body: "fascinating article",
+            genre: "Sport"
+          })
+          .expect(400)
+          .then(err => {
+            expect(err.body.msg).to.equal("Bad request invalid comment!");
+          });
+      });
 
-    it.only("GET returns status 200 and an array of comments", () => {
-      return request(app)
-        .get("/api/articles/1/comments")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).to.be.an("array");
-          expect(body[0]).to.have.keys([
-            "comment_id",
-            "author",
-            "article_id",
-            "votes",
-            "created_at",
-            "body"
-          ]);
-        });
-    });
-    it("GET returns status 200 with comments sorted to default sort order", () => {
-      return request(app)
-        .get("/api/articles/1/comments")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).to.be.sortedBy("created_at", { descending: true });
-        });
-    });
-    it("GET returns status 200 with comments sorted according to query", () => {
-      return request(app)
-        .get("/api/articles/1/comments?sort_by=comment_id&order_by=desc")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).to.be.sortedBy("comment_id", { descending: true });
-        });
-    });
-    it("GET returns status 400 with an error for an invalid sortBy column", () => {
-      return request(app)
-        .get("/api/articles/1/comments?sort_by=number_of_likes")
-        .expect(400)
-        .then(error => {
-          const errorBody = JSON.parse(error.text);
+      it("GET returns status 200 and an array of comments", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body).to.be.an("array");
+            expect(body[0]).to.have.keys([
+              "comment_id",
+              "author",
 
-          expect(errorBody.msg).to.equal("Invalid Column");
-        });
-    });
-    it("GET returns status 400 with an error for invalid query data type", () => {
-      return request(app)
-        .get("/api/articles/1/comments?sort_by={author}")
-        .expect(400)
-        .expect(error => {
-          const errorBody = JSON.parse(error.text);
+              "votes",
+              "created_at",
+              "body"
+            ]);
+          });
+      });
+      it("GET returns status 200 when article_id does not exist", () => {
+        return request(app)
+          .get("/api/articles/99/comments")
+          .expect(404)
+          .then(err => {
+            expect(err.body.msg).to.equal("Article does not exist");
+          });
+      });
+      it("GET returns status 200 with comments sorted to default sort order", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body).to.be.sortedBy("created_at", { descending: true });
+          });
+      });
+      it("GET returns status 200 with comments sorted according to query", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sort_by=comment_id&order_by=desc")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body).to.be.sortedBy("comment_id", { descending: true });
+          });
+      });
+      it("GET returns status 400 with an error for an invalid sort_by column", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sort_by=number_of_likes")
+          .expect(400)
+          .then(err => {
+            expect(err.body.msg).to.equal(
+              'select * from "comments" where "article_id" = $1 order by "number_of_likes" desc - column "number_of_likes" does not exist'
+            );
+          });
+      });
+      xit("GET returns status 400 with an error for invalid query", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sort=author")
+          .expect(400)
+          .expect(err => {
+            console.log(err);
+          });
+      });
+      describe("/articles", () => {
+        it("GET returns status 200 with an array of articles", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.an("array");
 
-          expect(errorBody.msg).to.equal("Invalid Column");
+              expect(body.articles[0]).to.contain.keys([
+                "article_id",
+                "title",
+                "body",
+                "votes",
+                "topic",
+                "author",
+                "created_at"
+              ]);
+            });
         });
+        it("GET 200 articles have a comment count", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.an("array");
+
+              expect(body.articles[0]).to.have.keys([
+                "article_id",
+                "title",
+                "body",
+                "votes",
+                "topic",
+                "author",
+                "created_at",
+                "comment_count"
+              ]);
+            });
+        });
+        it("GET 200 articles are sorted in descending order by date by default", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.an("array");
+
+              expect(body.articles[0]).to.have.keys([
+                "article_id",
+                "title",
+                "body",
+                "votes",
+                "topic",
+                "author",
+                "created_at",
+                "comment_count"
+              ]);
+
+              expect(body.articles).to.be.sortedBy("created_at", {
+                descending: true
+              });
+            });
+        });
+        it("GET 200 sorts articles by a given column", () => {
+          return request(app)
+            .get("/api/articles?sort_by=title")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.an("array");
+
+              expect(body.articles[0]).to.have.keys([
+                "article_id",
+                "title",
+                "body",
+                "votes",
+                "topic",
+                "author",
+                "created_at",
+                "comment_count"
+              ]);
+              expect(body.articles).to.be.sortedBy("title", {
+                descending: true
+              });
+            });
+        });
+        it("GET returns status 400 when sort_by query is invalid", () => {
+          return request(app)
+            .get("/api/articles?sort_by=rating")
+            .expect(400)
+            .then(err => {
+              expect(err.body.msg).to.equal(
+                'select "articles".*, count("comment_id") as "comment_count" from "articles" left join "comments" on "articles"."article_id" = "comments"."article_id" group by "articles"."article_id" order by "rating" desc - column "rating" does not exist'
+              );
+            });
+        });
+        it("GET 200 filters the articles by author", () => {
+          return request(app)
+            .get("/api/articles?author=butter_bridge")
+            .expect(200)
+            .then(({ body }) => {
+              for (let i = 0; i < body.articles.length; i++) {
+                expect(body.articles[i].author).to.equal("butter_bridge");
+              }
+            });
+        });
+        it("GET returns status 404 when author does not exist", () => {
+          return request(app)
+            .get("/api/articles?author=tomgregory")
+            .expect(404)
+            .then(err => {
+              expect(err.body.msg).to.equal("Invalid query!");
+            });
+        });
+        it("GET 200 filters articles by topic", () => {
+          return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({ body }) => {
+              for (let i = 0; i < body.articles.length; i++) {
+                expect(body.articles[i].topic).to.equal("mitch");
+              }
+            });
+        });
+        it("GET returns status 404 when topic does not exist", () => {
+          return request(app)
+            .get("/api/articles?topic=football")
+            .expect(404)
+            .then(err => {
+              expect(err.body.msg).to.equal("Invalid query!");
+            });
+        });
+      });
+      describe("/comments/:comment_id", () => {
+        it("PATCH returns status 200 and the comment with increased votes", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: 4 })
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comment[0].votes).to.equal(20);
+            });
+        });
+        it("PATCH returns status 200 and the comment with decreased votes", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: -4 })
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comment[0].votes).to.equal(12);
+            });
+        });
+        it("PATCH returns status 404 when comment_id does not exist", () => {
+          return request(app)
+            .patch("/api/comments/99")
+            .send({ inc_votes: -4 })
+            .expect(404)
+            .then(err => {
+              expect(err.body.msg).to.equal("Comment does not exist!");
+            });
+        });
+        it("PATCH returns status 400 when inc_votes is not a number", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: "four" })
+            .expect(400)
+            .then(err => {
+              expect(err.body.msg).to.equal(
+                'update "comments" set "votes" = "votes" + $1 where "comment_id" = $2 returning * - invalid input syntax for integer: "NaN"'
+              );
+            });
+        });
+        it("PATCH returns status 400 when request body is incorrect", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: 4, column: "votes" })
+            .expect(400)
+            .then(err => {
+              expect(err.body.msg).to.equal("Incorrect request body");
+            });
+        });
+        it("PATCH returns status 400 when request body is incorrect", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ increase_votes: 4 })
+            .expect(400)
+            .then(err => {
+              expect(err.body.msg).to.equal("Incorrect request body");
+            });
+        });
+      });
     });
   });
 });

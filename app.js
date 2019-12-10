@@ -7,7 +7,7 @@ app.use(express.json());
 app.use("/api", apiRouter);
 
 app.use((err, req, res, next) => {
-  const psqlCodes = ["22P02", "23503"];
+  const psqlCodes = ["22P02", "23503", "42703"];
 
   if (psqlCodes.includes(err.code)) res.status(400).send({ msg: err.message });
   else {
@@ -18,15 +18,9 @@ app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {
   res.status(err.status).send({ msg: err.msg });
 });
-// app.use((err, req, res, next) => {
-//   res.status(404).send({ msg: "Invalid article Id" });
-// });
 
-// app.use((err, req, res, next) => {
-//   res.status(400).send({ msg: "bad request!" });
-// });
+app.all("/*", (req, res, next) => {
+  res.status(404).send({ msg: "Route not found" });
+});
 
-// app.all("/*", (req, res, next) => {
-//   res.status(404).send({ msg: "Route not found" });
-// });
 module.exports = app;

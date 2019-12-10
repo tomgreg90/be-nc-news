@@ -1,8 +1,15 @@
-const { sendComment } = require("../models/comments");
+const changeComment = require("../models/comments");
 
-exports.postComment = (req, res, next) => {
-  const comment = req.body;
-  sendComment(comment).then(comment => {
-    console.log(comment);
-  });
+exports.updateComments = (req, res, next) => {
+  console.log("upddating comment!");
+
+  const { comment_id } = req.params;
+
+  changeComment(comment_id, req.body)
+    .then(comment => {
+      res.status(200).send({ comment });
+    })
+    .catch(err => {
+      return next(err);
+    });
 };
