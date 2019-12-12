@@ -15,9 +15,9 @@ describe("/api", () => {
       return request(app)
         .get("/api/topics")
         .expect(200)
-        .then(res => {
-          expect(res.body.topics).to.be.an("array");
-          expect(res.body.topics[0]).to.have.keys(["slug", "description"]);
+        .then(({body}) => {
+          expect(body.topics).to.be.an("array");
+          expect(body.topics[0]).to.have.keys(["slug", "description"]);
         });
     });
     it("GET responds with 404 if route not found", () => {
@@ -265,8 +265,8 @@ describe("/api", () => {
           .get("/api/articles/1/comments")
           .expect(200)
           .then(({ body }) => {
-            expect(body).to.be.an("array");
-            expect(body[0]).to.have.keys([
+            expect(body.comments).to.be.an("array");
+            expect(body.comments[0]).to.have.keys([
               "comment_id",
               "author",
               "votes",
@@ -275,7 +275,7 @@ describe("/api", () => {
             ]);
           });
       });
-      it("GET returns status 200 when article_id does not exist", () => {
+      it("GET returns status 404 when article_id does not exist", () => {
         return request(app)
           .get("/api/articles/99/comments")
           .expect(404)
@@ -288,7 +288,9 @@ describe("/api", () => {
           .get("/api/articles/1/comments")
           .expect(200)
           .then(({ body }) => {
-            expect(body).to.be.sortedBy("created_at", { descending: true });
+            expect(body.comments).to.be.sortedBy("created_at", {
+              descending: true
+            });
           });
       });
       it("GET returns status 200 with comments sorted according to query", () => {
@@ -296,7 +298,9 @@ describe("/api", () => {
           .get("/api/articles/1/comments?sort_by=comment_id&order_by=desc")
           .expect(200)
           .then(({ body }) => {
-            expect(body).to.be.sortedBy("comment_id", { descending: true });
+            expect(body.comments).to.be.sortedBy("comment_id", {
+              descending: true
+            });
           });
       });
       it("GET returns status 400 with an error for an invalid sort_by column", () => {

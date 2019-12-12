@@ -21,8 +21,6 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.updateArticleVotes = (req, res, next) => {
-  console.log("updating article votes!");
-
   const { id } = req.params;
 
   changeArticleVotes(id, req.body)
@@ -52,7 +50,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
 
   fetchCommentsByArticleId(id, req.query)
     .then(comments => {
-      res.status(200).send(comments);
+      res.status(200).send({ comments });
     })
     .catch(err => {
       return next(err);
@@ -62,7 +60,6 @@ exports.getCommentsByArticleId = (req, res, next) => {
 exports.getArticles = (req, res, next) => {
   const { author, topic } = req.query;
 
-  console.log("getting the articles!");
   Promise.all([
     fetchArticles(req.query),
     fetchUserByUsername(author),

@@ -27,8 +27,6 @@ const changeComment = (id, body) => {
 };
 
 const removeComment = id => {
-  console.log("removing comment");
-  console.log(id);
   return connection("comments")
     .where("comment_id", id)
     .del()

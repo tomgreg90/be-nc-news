@@ -3,7 +3,6 @@ const { fetchUserByUsername } = require("../models/users");
 const { fetchTopics } = require("../models/topics");
 
 const fetchArticleById = id => {
-  console.log("in articles model");
   return connection
     .select("articles.*")
     .count({ comment_count: "comment_id" })
@@ -55,7 +54,7 @@ const changeArticleVotes = (id, query) => {
 
 const sendComment = (id, comment) => {
   const commentKeys = Object.keys(comment);
-  console.log(comment);
+
   if (commentKeys.length > 2)
     return Promise.reject({ status: 400, msg: "Bad request invalid comment!" });
   if (!comment.username || !comment.body) {
@@ -71,8 +70,6 @@ const sendComment = (id, comment) => {
 };
 
 const fetchCommentsByArticleId = (id, { sort_by, order_by }) => {
-  console.log("getting the comments");
-
   if (order_by && order_by !== "asc" && order_by !== "desc")
     return Promise.reject({
       status: 400,
@@ -96,8 +93,6 @@ const fetchCommentsByArticleId = (id, { sort_by, order_by }) => {
 };
 
 const fetchArticles = ({ sort_by, order_by, author, topic }) => {
-  console.log("getting articles");
-
   return connection
     .select("articles.*")
 
