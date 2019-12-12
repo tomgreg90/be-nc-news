@@ -48,8 +48,9 @@ exports.postComment = (req, res, next) => {
 exports.getCommentsByArticleId = (req, res, next) => {
   const { id } = req.params;
 
-  fetchCommentsByArticleId(id, req.query)
-    .then(comments => {
+  Promise.all([fetchArticleById(id), fetchCommentsByArticleId(id, req.query)])
+    .then(result => {
+      const comments = result[1];
       res.status(200).send({ comments });
     })
     .catch(err => {

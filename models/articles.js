@@ -1,6 +1,4 @@
 const connection = require("../db/connection");
-const { fetchUserByUsername } = require("../models/users");
-const { fetchTopics } = require("../models/topics");
 
 const fetchArticleById = id => {
   return connection
@@ -10,11 +8,15 @@ const fetchArticleById = id => {
     .where("articles.article_id", id)
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
-    .then(article => {
-      if (!article.length)
+    .then(articles => {
+      if (!articles.length)
         return Promise.reject({ status: 404, msg: "Article does not exist" });
       else {
-        return article;
+        const article = articles.map(item => {
+          item.comment_count = Number(item.comment_count);
+          return item;
+        });
+        return article[0];
       }
     });
 };
@@ -22,6 +24,7 @@ const fetchArticleById = id => {
 const changeArticleVotes = (id, query) => {
   const keys = Object.keys(query);
   const { inc_votes } = query;
+  if (inc_votes === "undefined") inc_votes = 0;
 
   const articleKeys = [
     "author",
@@ -32,24 +35,32 @@ const changeArticleVotes = (id, query) => {
     "comment_count"
   ];
 
+  if (keys.length > 1)
+    return Promise.reject({ status: 400, msg: "Incorrect query body!" });
+
   if (articleKeys.includes(keys[0]))
     return Promise.reject({
       status: 400,
       msg: `You may not change ${keys[0]}!`
     });
 
-  if (!keys.includes("inc_votes") || keys.length > 1)
+  if (keys[0] !== "inc_votes" && keys.length === 1)
     return Promise.reject({ status: 400, msg: "Incorrect query body!" });
 
-  return connection("articles")
-    .where("article_id", "=", id)
-    .increment("votes", inc_votes)
-    .returning("*")
-    .then(article => {
-      if (!article.length)
-        return Promise.reject({ status: 404, msg: "Article does not exist!" });
-      return article;
-    });
+  if (!keys.length || keys[0] === "inc_votes")
+    return connection("articles")
+      .where("article_id", "=", id)
+      .increment("votes", inc_votes || 0)
+      .returning("*")
+      .then(article => {
+        if (!article.length)
+          return Promise.reject({
+            status: 404,
+            msg: "Article does not exist!"
+          });
+
+        return article[0];
+      });
 };
 
 const sendComment = (id, comment) => {
@@ -64,27 +75,25 @@ const sendComment = (id, comment) => {
       .insert({ author: comment.username, body: comment.body, article_id: id })
       .returning("*")
       .then(comment => {
-        return comment;
+        return comment[0];
       });
   }
 };
 
-const fetchCommentsByArticleId = (id, { sort_by, order_by }) => {
-  if (order_by && order_by !== "asc" && order_by !== "desc")
+const fetchCommentsByArticleId = (id, { sort_by, order }) => {
+  if (order && order !== "asc" && order !== "desc")
     return Promise.reject({
       status: 400,
-      msg: `cannot order by ${order_by}`
+      msg: `cannot order by ${order}`
     });
 
   return connection("comments")
     .where("article_id", id)
     .select("*")
-    .orderBy(sort_by || "created_at", order_by || "desc")
+    .orderBy(sort_by || "created_at", order || "desc")
 
     .returning("*")
     .then(comments => {
-      if (!comments.length)
-        return Promise.reject({ status: 404, msg: "Article does not exist" });
       return comments.map(item => {
         delete item.article_id;
         return item;
@@ -92,7 +101,7 @@ const fetchCommentsByArticleId = (id, { sort_by, order_by }) => {
     });
 };
 
-const fetchArticles = ({ sort_by, order_by, author, topic }) => {
+const fetchArticles = ({ sort_by, order, author, topic }) => {
   return connection
     .select("articles.*")
 
@@ -101,7 +110,7 @@ const fetchArticles = ({ sort_by, order_by, author, topic }) => {
 
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
-    .orderBy(sort_by || "created_at", order_by || "desc")
+    .orderBy(sort_by || "created_at", order || "desc")
     .modify(query => {
       if (author) query.where("articles.author", author);
       if (topic) query.where("articles.topic", topic);
