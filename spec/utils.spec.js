@@ -5,7 +5,7 @@ const {
   formatComments
 } = require("../db/utils/utils");
 
-describe("formatDates", () => {
+describe.only("formatDates", () => {
   it("returns an empty array when passed an empty array", () => {
     const input = [];
     const expected = [];
@@ -20,7 +20,8 @@ describe("formatDates", () => {
         topic: "mitch",
         author: "icellusedkars",
         body: "Delicious tin of cat food",
-        created_at: 911564514171
+        created_at: 911564514171,
+        votes: 100
       }
     ];
     const actual = formatDates(input);
@@ -30,7 +31,8 @@ describe("formatDates", () => {
         topic: "mitch",
         author: "icellusedkars",
         body: "Delicious tin of cat food",
-        created_at: new Date(911564514171)
+        created_at: new Date(911564514171),
+        votes: 100
       }
     ];
 
@@ -41,7 +43,8 @@ describe("formatDates", () => {
       topic: "mitch",
       author: "icellusedkars",
       body: "Delicious tin of cat food",
-      created_at: 911564514171
+      created_at: 911564514171,
+      votes: 100
     });
   });
   it("converts timestamp for multiple objects into a javascript date object", () => {
@@ -51,14 +54,16 @@ describe("formatDates", () => {
         topic: "mitch",
         author: "icellusedkars",
         body: "Delicious tin of cat food",
-        created_at: 911564514171
+        created_at: 911564514171,
+        votes: 12
       },
       {
         title: "Z",
         topic: "mitch",
         author: "icellusedkars",
         body: "I was hungry.",
-        created_at: 785420514171
+        created_at: 785420514171,
+        votes: 4
       },
       {
         title: "Does Mitch predate civilisation?",
@@ -66,7 +71,8 @@ describe("formatDates", () => {
         author: "icellusedkars",
         body:
           "Archaeologists have uncovered a gigantic statue from the dawn of humanity, and it has an uncanny resemblance to Mitch. Surely I am not the only person who can see this?!",
-        created_at: 659276514171
+        created_at: 659276514171,
+        votes: 4
       }
     ];
     const actual = formatDates(input);
@@ -76,14 +82,16 @@ describe("formatDates", () => {
         topic: "mitch",
         author: "icellusedkars",
         body: "Delicious tin of cat food",
-        created_at: new Date(911564514171)
+        created_at: new Date(911564514171),
+        votes: 12
       },
       {
         title: "Z",
         topic: "mitch",
         author: "icellusedkars",
         body: "I was hungry.",
-        created_at: new Date(785420514171)
+        created_at: new Date(785420514171),
+        votes: 4
       },
       {
         title: "Does Mitch predate civilisation?",
@@ -91,7 +99,8 @@ describe("formatDates", () => {
         author: "icellusedkars",
         body:
           "Archaeologists have uncovered a gigantic statue from the dawn of humanity, and it has an uncanny resemblance to Mitch. Surely I am not the only person who can see this?!",
-        created_at: new Date(659276514171)
+        created_at: new Date(659276514171),
+        votes: 4
       }
     ];
     expect(actual).to.deep.equal(expected);

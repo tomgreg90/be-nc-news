@@ -88,7 +88,7 @@ describe("/api", () => {
             "created_at",
             "comment_count"
           ]);
-          expect(body.article.votes).to.equal(0);
+          expect(body.article.votes).to.equal(100);
           expect(body.article.comment_count).to.equal(13);
         });
     });
@@ -127,7 +127,7 @@ describe("/api", () => {
             "author",
             "created_at"
           ]);
-          expect(body.article.votes).to.equal(7);
+          expect(body.article.votes).to.equal(13);
         });
     });
     it(" PATCH returns status 200 if no information is in the PATCH body", () => {
@@ -146,7 +146,7 @@ describe("/api", () => {
             "author",
             "created_at"
           ]);
-          expect(body.article.votes).to.equal(0);
+          expect(body.article.votes).to.equal(6);
         });
     });
 
@@ -558,7 +558,7 @@ describe("/api", () => {
               expect(body.comment.votes).to.equal(12);
             });
         });
-        it("returns status 200 when no inc_votes property is given", () => {
+        it(" PATCH returns status 200 when no inc_votes property is given", () => {
           return request(app)
             .patch("/api/comments/1")
             .send({})

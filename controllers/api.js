@@ -12,7 +12,7 @@ exports.getEndpoints = (req, res, next) => {
       }
     },
     "GET /api/users/:username": {
-      description: "serves up an object containing details of a user",
+      description: "serves up an object containing details of a specific user",
       queries: [],
       exampleResponse: {
         username: "butter_bridge",
@@ -22,7 +22,7 @@ exports.getEndpoints = (req, res, next) => {
       }
     },
     "GET /api/articles/:article_id": {
-      description: "serves up the article specified by the article_id",
+      description: "serves up the article object specified by the article_id",
       queries: [],
       exampleResponse: {
         article_id: 1,
@@ -36,7 +36,7 @@ exports.getEndpoints = (req, res, next) => {
       }
     },
     "PATCH /api/articles/:article_id": {
-      description: "changes the votes key by a given amount",
+      description: "increments the vote count by a given amount",
       queries: [],
       exampleResponse: {
         article_id: 1,
@@ -85,7 +85,7 @@ exports.getEndpoints = (req, res, next) => {
       ]
     },
     "GET /api/articles": {
-      description: "serves up an array of the articles",
+      description: "serves up an array containing all of the articles",
       queries: ["sort_by", "order"],
       exampleResponse: [
         {
@@ -125,7 +125,7 @@ exports.getEndpoints = (req, res, next) => {
       }
     },
     "DELETE /api/comments/:comment_id": {
-      description: "deletes a comment serving up no content",
+      description: "deletes a specific comment serving up no content",
       queries: []
     }
   };
