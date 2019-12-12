@@ -5,6 +5,8 @@ const {
   fetchCommentsByArticleId,
   fetchArticles
 } = require("../models/articles");
+const { fetchUserByUsername } = require("../models/users");
+const { fetchTopicByName } = require("../models/topics");
 
 exports.getArticleById = (req, res, next) => {
   const { id } = req.params;
@@ -58,9 +60,17 @@ exports.getCommentsByArticleId = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
+  const { author, topic } = req.query;
+
   console.log("getting the articles!");
-  fetchArticles(req.query)
-    .then(articles => {
+  Promise.all([
+    fetchArticles(req.query),
+    fetchUserByUsername(author),
+    fetchTopicByName(topic)
+  ])
+    .then(result => {
+      const articles = result[0];
+
       res.status(200).send({ articles });
     })
     .catch(err => {

@@ -10,4 +10,17 @@ const fetchTopics = () => {
     });
 };
 
-module.exports = { fetchTopics };
+const fetchTopicByName = topic => {
+  if (!topic) return;
+  console.log("fetching topic", topic);
+  return connection("topics")
+    .where("slug", topic)
+    .then(topic => {
+      if (!topic.length)
+        return Promise.reject({ status: 404, msg: "topic does not exist!" });
+      console.log(topic);
+      return topic;
+    });
+};
+
+module.exports = { fetchTopics, fetchTopicByName };

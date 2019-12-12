@@ -6,15 +6,23 @@ const {
   getCommentsByArticleId,
   getArticles
 } = require("../controllers/articles");
+const { methodError } = require("../methodErrs/index");
 
 articleRouter
   .route("/:id")
   .get(getArticleById)
-  .patch(updateArticleVotes);
+  .patch(updateArticleVotes)
+  .all(methodError);
 
-articleRouter.route("/").get(getArticles);
+articleRouter
+  .route("/")
+  .get(getArticles)
+  .all(methodError);
 
-articleRouter.post("/:id/comments", postComment);
-articleRouter.get("/:id/comments", getCommentsByArticleId);
+articleRouter
+  .route("/:id/comments")
+  .post(postComment)
+  .get(getCommentsByArticleId)
+  .all(methodError);
 
 module.exports = articleRouter;

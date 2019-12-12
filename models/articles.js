@@ -1,4 +1,6 @@
 const connection = require("../db/connection");
+const { fetchUserByUsername } = require("../models/users");
+const { fetchTopics } = require("../models/topics");
 
 const fetchArticleById = id => {
   console.log("in articles model");
@@ -22,6 +24,21 @@ const changeArticleVotes = (id, query) => {
   const keys = Object.keys(query);
   const { inc_votes } = query;
 
+  const articleKeys = [
+    "author",
+    "title",
+    "article_id",
+    "topic",
+    "created_at",
+    "comment_count"
+  ];
+
+  if (articleKeys.includes(keys[0]))
+    return Promise.reject({
+      status: 400,
+      msg: `You may not change ${keys[0]}!`
+    });
+
   if (!keys.includes("inc_votes") || keys.length > 1)
     return Promise.reject({ status: 400, msg: "Incorrect query body!" });
 
@@ -38,6 +55,7 @@ const changeArticleVotes = (id, query) => {
 
 const sendComment = (id, comment) => {
   const commentKeys = Object.keys(comment);
+  console.log(comment);
   if (commentKeys.length > 2)
     return Promise.reject({ status: 400, msg: "Bad request invalid comment!" });
   if (!comment.username || !comment.body) {
@@ -55,6 +73,12 @@ const sendComment = (id, comment) => {
 const fetchCommentsByArticleId = (id, { sort_by, order_by }) => {
   console.log("getting the comments");
 
+  if (order_by && order_by !== "asc" && order_by !== "desc")
+    return Promise.reject({
+      status: 400,
+      msg: `cannot order by ${order_by}`
+    });
+
   return connection("comments")
     .where("article_id", id)
     .select("*")
@@ -71,9 +95,8 @@ const fetchCommentsByArticleId = (id, { sort_by, order_by }) => {
     });
 };
 
-const fetchArticles = ({ sort_by, order, author, topic }) => {
+const fetchArticles = ({ sort_by, order_by, author, topic }) => {
   console.log("getting articles");
-  console.log(sort_by, order, author);
 
   return connection
     .select("articles.*")
@@ -83,15 +106,12 @@ const fetchArticles = ({ sort_by, order, author, topic }) => {
 
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
-    .orderBy(sort_by || "created_at", order || "desc")
+    .orderBy(sort_by || "created_at", order_by || "desc")
     .modify(query => {
       if (author) query.where("articles.author", author);
       if (topic) query.where("articles.topic", topic);
     })
     .then(articles => {
-      if (!articles.length)
-        return Promise.reject({ status: 404, msg: "Invalid query!" });
-
       return articles;
     });
 };
