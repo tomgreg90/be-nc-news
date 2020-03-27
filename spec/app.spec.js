@@ -105,7 +105,7 @@ describe("/api", () => {
         .get("/api/articles/one")
         .expect(400)
         .then(err => {
-          expect(err.body.msg).to.equal("Error, Bad Request!");
+          expect(err.body.msg).to.equal("Bad Request!");
         });
     });
 
@@ -163,7 +163,7 @@ describe("/api", () => {
         .send({ inc_votes: 4 })
         .expect(400)
         .then(err => {
-          expect(err.body.msg).to.equal("Error, Bad Request!");
+          expect(err.body.msg).to.equal("Bad Request!");
         });
     });
     it("PATCH returns status 400 if attempt is made to change another key", () => {
@@ -181,7 +181,7 @@ describe("/api", () => {
         .send({ inc_votes: "five" })
         .expect(400)
         .then(err => {
-          expect(err.body.msg).to.equal("Error, Bad Request!");
+          expect(err.body.msg).to.equal("Bad Request!");
         });
     });
     it("PATCH returns status 400 when patch body is in the wrong format", () => {
@@ -237,7 +237,7 @@ describe("/api", () => {
           .send({ username: "rogersop", body: "fascinating article" })
           .expect(400)
           .then(err => {
-            expect(err.body.msg).to.equal("Error, Bad Request!");
+            expect(err.body.msg).to.equal("Bad Request!");
           });
       });
       it("POST returns status 404 when given an invalid username", () => {
@@ -352,7 +352,7 @@ describe("/api", () => {
           .get("/api/articles/1/comments?sort_by=number_of_likes")
           .expect(400)
           .then(err => {
-            expect(err.body.msg).to.equal("Error, Bad Request!");
+            expect(err.body.msg).to.equal("Bad Request!");
           });
       });
       it("GET returns status 400 if order_by anything other than asc or desc", () => {
@@ -461,7 +461,7 @@ describe("/api", () => {
           .get("/api/articles?sort_by=rating")
           .expect(400)
           .then(err => {
-            expect(err.body.msg).to.equal("Error, Bad Request!");
+            expect(err.body.msg).to.equal("Bad Request!");
           });
       });
       it("GET returns status 400 when order_by is not asc or desc", () => {
@@ -469,7 +469,7 @@ describe("/api", () => {
           .get("/api/articles/order=das")
           .expect(400)
           .then(err => {
-            expect(err.body.msg).to.equal("Error, Bad Request!");
+            expect(err.body.msg).to.equal("Bad Request!");
           });
       });
       it("GET 200 filters the articles by author", () => {
@@ -569,7 +569,7 @@ describe("/api", () => {
             .send({ inc_votes: 4 })
             .expect(400)
             .then(err => {
-              expect(err.body.msg).to.equal("Error, Bad Request!");
+              expect(err.body.msg).to.equal("Bad Request!");
             });
         });
         it("PATCH returns status 400 when inc_votes is not a number", () => {
@@ -578,7 +578,7 @@ describe("/api", () => {
             .send({ inc_votes: "four" })
             .expect(400)
             .then(err => {
-              expect(err.body.msg).to.equal("Error, Bad Request!");
+              expect(err.body.msg).to.equal("Bad Request!");
             });
         });
         it("PATCH returns status 200 when request body is incorrect but inc_votes still there", () => {
@@ -628,7 +628,7 @@ describe("/api", () => {
             .delete("/api/comments/one")
             .expect(400)
             .then(err => {
-              expect(err.body.msg).to.equal("Error, Bad Request!");
+              expect(err.body.msg).to.equal("Bad Request!");
             });
         });
         it("DELETE returns status 404 with error message when route is not found", () => {
