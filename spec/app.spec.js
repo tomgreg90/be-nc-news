@@ -105,9 +105,7 @@ describe("/api", () => {
         .get("/api/articles/one")
         .expect(400)
         .then(err => {
-          expect(err.body.msg).to.equal(
-            'select "articles".*, count("comment_id") as "comment_count" from "articles" left join "comments" on "articles"."article_id" = "comments"."article_id" where "articles"."article_id" = $1 group by "articles"."article_id" - invalid input syntax for integer: "one"'
-          );
+          expect(err.body.msg).to.equal("Error, Bad Request!");
         });
     });
 
@@ -165,9 +163,7 @@ describe("/api", () => {
         .send({ inc_votes: 4 })
         .expect(400)
         .then(err => {
-          expect(err.body.msg).to.equal(
-            'update "articles" set "votes" = "votes" + $1 where "article_id" = $2 returning * - invalid input syntax for integer: "one"'
-          );
+          expect(err.body.msg).to.equal("Error, Bad Request!");
         });
     });
     it("PATCH returns status 400 if attempt is made to change another key", () => {
@@ -185,9 +181,7 @@ describe("/api", () => {
         .send({ inc_votes: "five" })
         .expect(400)
         .then(err => {
-          expect(err.body.msg).to.equal(
-            'update "articles" set "votes" = "votes" + $1 where "article_id" = $2 returning * - invalid input syntax for integer: "NaN"'
-          );
+          expect(err.body.msg).to.equal("Error, Bad Request!");
         });
     });
     it("PATCH returns status 400 when patch body is in the wrong format", () => {
@@ -243,9 +237,7 @@ describe("/api", () => {
           .send({ username: "rogersop", body: "fascinating article" })
           .expect(400)
           .then(err => {
-            expect(err.body.msg).to.equal(
-              'insert into "comments" ("article_id", "author", "body") values ($1, $2, $3) returning * - invalid input syntax for integer: "four"'
-            );
+            expect(err.body.msg).to.equal("Error, Bad Request!");
           });
       });
       it("POST returns status 404 when given an invalid username", () => {
@@ -360,9 +352,7 @@ describe("/api", () => {
           .get("/api/articles/1/comments?sort_by=number_of_likes")
           .expect(400)
           .then(err => {
-            expect(err.body.msg).to.equal(
-              'select * from "comments" where "article_id" = $1 order by "number_of_likes" desc - column "number_of_likes" does not exist'
-            );
+            expect(err.body.msg).to.equal("Error, Bad Request!");
           });
       });
       it("GET returns status 400 if order_by anything other than asc or desc", () => {
@@ -471,9 +461,7 @@ describe("/api", () => {
           .get("/api/articles?sort_by=rating")
           .expect(400)
           .then(err => {
-            expect(err.body.msg).to.equal(
-              'select "articles".*, count("comment_id") as "comment_count" from "articles" left join "comments" on "articles"."article_id" = "comments"."article_id" group by "articles"."article_id" order by "rating" desc - column "rating" does not exist'
-            );
+            expect(err.body.msg).to.equal("Error, Bad Request!");
           });
       });
       it("GET returns status 400 when order_by is not asc or desc", () => {
@@ -481,9 +469,7 @@ describe("/api", () => {
           .get("/api/articles/order=das")
           .expect(400)
           .then(err => {
-            expect(err.body.msg).to.equal(
-              'select "articles".*, count("comment_id") as "comment_count" from "articles" left join "comments" on "articles"."article_id" = "comments"."article_id" where "articles"."article_id" = $1 group by "articles"."article_id" - invalid input syntax for integer: "order=das"'
-            );
+            expect(err.body.msg).to.equal("Error, Bad Request!");
           });
       });
       it("GET 200 filters the articles by author", () => {
@@ -583,9 +569,7 @@ describe("/api", () => {
             .send({ inc_votes: 4 })
             .expect(400)
             .then(err => {
-              expect(err.body.msg).to.equal(
-                'update "comments" set "votes" = "votes" + $1 where "comment_id" = $2 returning * - invalid input syntax for integer: "one"'
-              );
+              expect(err.body.msg).to.equal("Error, Bad Request!");
             });
         });
         it("PATCH returns status 400 when inc_votes is not a number", () => {
@@ -594,9 +578,7 @@ describe("/api", () => {
             .send({ inc_votes: "four" })
             .expect(400)
             .then(err => {
-              expect(err.body.msg).to.equal(
-                'update "comments" set "votes" = "votes" + $1 where "comment_id" = $2 returning * - invalid input syntax for integer: "NaN"'
-              );
+              expect(err.body.msg).to.equal("Error, Bad Request!");
             });
         });
         it("PATCH returns status 200 when request body is incorrect but inc_votes still there", () => {
@@ -646,9 +628,7 @@ describe("/api", () => {
             .delete("/api/comments/one")
             .expect(400)
             .then(err => {
-              expect(err.body.msg).to.equal(
-                'delete from "comments" where "comment_id" = $1 returning * - invalid input syntax for integer: "one"'
-              );
+              expect(err.body.msg).to.equal("Error, Bad Request!");
             });
         });
         it("DELETE returns status 404 with error message when route is not found", () => {

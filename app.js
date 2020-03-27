@@ -11,7 +11,8 @@ app.use("/api", apiRouter);
 app.use((err, req, res, next) => {
   const psqlCodes = ["22P02", "42703"];
 
-  if (psqlCodes.includes(err.code)) res.status(400).send({ msg: err.message });
+  if (psqlCodes.includes(err.code))
+    res.status(400).send({ msg: "Error, Bad Request!" });
   else {
     next(err);
   }
