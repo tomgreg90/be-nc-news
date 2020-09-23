@@ -2,13 +2,21 @@
 
 ## Welcome
 
-Welcome to my website! This is the backend part of my news API, which will interact with my SQL database upon request and perform GET, POST, PATCH and DELETE requests according to specific endpoints.
+Welcome to the backend of my Northcoders News api.
+
+It runs on an express sever which listens to incoming requests from the front end, or which runs on your local computer, and will interact with an SQL database using knex.js as a query builder and perform GET, POST, PATCH and DELETE requests according to specific endpoints.
 
 To view a list of the available endpoints simply follow this link! https://tomgreg-nc-news.herokuapp.com/api. All endpoints have a description and an example response in the form of a JSON object, as well as acceptable queries where applicable.
 
 ## To Install
 
-To install the project simply fork and clone this repository https://github.com/tomgreg90/be-nc-news and then run
+To install the project simply fork and clone this repository
+
+```
+git clone https://github.com/tomgreg90/be-nc-news.git
+```
+
+and then run
 
 ```bash
 npm install
@@ -18,7 +26,7 @@ to install the relevant dependencies.
 
 ## To Start
 
-To start the project and interact with the database simply run
+To start the server run
 
 ```bash
 npm start
