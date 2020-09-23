@@ -1,16 +1,20 @@
-# My NorthCoders News App, by Tom Gregory
+# NorthCoders News Api
+
+# Tom Gregory
 
 ## Welcome
 
 Welcome to the backend of my Northcoders News api.
 
+This is a reddit style news api where users can 
+
 It runs on an express sever which listens to incoming requests from the front end, or which runs on your local computer, and will interact with an SQL database using knex.js as a query builder and perform GET, POST, PATCH and DELETE requests according to specific endpoints.
 
-To view a list of the available endpoints simply follow this link! https://tomgreg-nc-news.herokuapp.com/api. All endpoints have a description and an example response in the form of a JSON object, as well as acceptable queries where applicable.
+ simply follow this link! https://tomgreg-nc-news.herokuapp.com/api. All endpoints have a description and an example response in the form of a JSON object, as well as acceptable queries where applicable.
 
 ## To Install
 
-To install the project simply fork and clone this repository
+Ensure you have the latest version of node.js installed and then simply fork and clone this repository using the command
 
 ```
 git clone https://github.com/tomgreg90/be-nc-news.git
@@ -32,7 +36,9 @@ To start the server run
 npm start
 ```
 
-and run localhost:9090 in your browser. You can then begin making requests to the database through the endpoints listed above.
+and run localhost:9090 in your browser.
+
+To view a list of the available endpoints begin with the /api endpoint, which will serve up a list of available endpoints as well as a description and sample response.
 
 All GET requests serve up a JSON object/array containing the requested data. PATCH and POST requests accept JSON objects containing the relevant data.
 
