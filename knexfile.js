@@ -3,6 +3,7 @@ const { DB_URL } = process.env;
 
 const baseConfig = {
   client: "pg",
+  ssl: { rejectUnauthorized: false },
   migrations: {
     directory: "./db/migrations"
   },
