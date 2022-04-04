@@ -59,6 +59,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
+
   const { author, topic } = req.query;
 
   Promise.all([
@@ -72,6 +73,9 @@ exports.getArticles = (req, res, next) => {
       res.status(200).send({ articles });
     })
     .catch(err => {
+
+      console.log(err)
+
       return next(err);
     });
 };

@@ -102,6 +102,7 @@ const fetchCommentsByArticleId = (id, { sort_by, order }) => {
 };
 
 const fetchArticles = ({ sort_by, order, author, topic }) => {
+
   return connection
     .select("articles.*")
 
