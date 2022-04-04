@@ -8,6 +8,9 @@ app.use(express.json());
 
 app.use("/api", apiRouter);
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED=0
+process.env.DATABASE_REJECT_UNAUTHORIZED === false
+
 app.use((err, req, res, next) => {
   const psqlCodes = ["22P02", "42703"];
 
