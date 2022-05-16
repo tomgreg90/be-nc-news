@@ -1,8 +1,11 @@
 const ENV = process.env.NODE_ENV || "development";
 const { DB_URL } = process.env;
 
+console.log("in knex file")
+
 const baseConfig = {
   client: "pg",
+  ssl: { rejectUnauthorized: false },
   migrations: {
     directory: "./db/migrations"
   },
@@ -27,7 +30,8 @@ const customConfig = {
     }
   },
   production: {
-    connection: `${DB_URL}?ssl=true`
+    connection: `${DB_URL}?ssl=true`,
+    ssl: { rejectUnauthorized: false }
   }
 };
 
