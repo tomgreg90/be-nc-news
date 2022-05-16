@@ -31,9 +31,9 @@
     "chai": "^4.2.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "knex": "^0.20.4",
+    "knex": "^1.0.3",
     "mocha": "^6.2.2",
-    "pg": "^7.12.1",
+    "pg": "^8.7.1",
     "sams-chai-sorted": "^1.0.2"
   },
   "devDependencies": {

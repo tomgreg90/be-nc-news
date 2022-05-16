@@ -8,6 +8,9 @@ const {
 const { formatDates, formatComments, makeRefObj } = require("../utils/utils");
 
 exports.seed = function(knex) {
+
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED=0
+  process.env.DATABASE_REJECT_UNAUTHORIZED === false
   const topicsInsertions = knex("topics").insert(topicData);
   const usersInsertions = knex("users").insert(userData);
 
