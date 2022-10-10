@@ -9,6 +9,7 @@ app.use(express.json());
 app.use("/api", apiRouter);
 
 app.use((err, req, res, next) => {
+
   const psqlCodes = ["22P02", "42703"];
 
   if (psqlCodes.includes(err.code))
