@@ -6,7 +6,20 @@ app.use(cors());
 
 app.use(express.json());
 
+app.get("/database", (req, res) => {
+  console.log("getting database url")
+  if(process.env.DATABASE_URL) {
+    res.send(process.env.DATABASE_URL)
+  }
+    else {
+      res.send("<p>no database_url</p>")
+    }
+  
+})
+
 app.use("/api", apiRouter);
+
+
 
 app.use((err, req, res, next) => {
 
